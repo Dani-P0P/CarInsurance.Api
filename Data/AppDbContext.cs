@@ -8,6 +8,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Owner> Owners => Set<Owner>();
     public DbSet<Car> Cars => Set<Car>();
     public DbSet<InsurancePolicy> Policies => Set<InsurancePolicy>();
+    public DbSet<InsuranceClaim> Claims => Set<InsuranceClaim>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,6 +25,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .IsRequired();
 
         // EndDate intentionally left nullable for a later task
+
+        modelBuilder.Entity<InsuranceClaim>()
+            .Property(cl => cl.ClaimDate)
+            .IsRequired();
     }
 }
 
