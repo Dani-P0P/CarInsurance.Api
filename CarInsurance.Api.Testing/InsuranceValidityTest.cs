@@ -41,7 +41,7 @@ public class InsuranceValidityTest : IClassFixture<WebApplicationFactory<Program
             {
                 Car = car,
                 StartDate = new DateOnly(2025, 1, 1),
-                EndDate = new DateOnly(2025, 12, 31),
+                EndDate = new DateTime(2025, 12, 31),
                 Provider = "Allianz"
             });
             db.SaveChanges();

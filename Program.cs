@@ -1,3 +1,4 @@
+using CarInsurance.Api.BackgroundTasks;
 using CarInsurance.Api.Data;
 using CarInsurance.Api.Services;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 
 builder.Services.AddScoped<CarService>();
+builder.Services.AddHostedService<PolicyExpirationLogger>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

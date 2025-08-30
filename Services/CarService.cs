@@ -17,15 +17,15 @@ public class CarService(AppDbContext db)
             .ToListAsync();
     }
 
-    public async Task<bool> IsInsuranceValidAsync(long carId, DateOnly date)
+    public async Task<bool> IsInsuranceValidAsync(long carId, DateTime date)
     {
         var carExists = await _db.Cars.AnyAsync(c => c.Id == carId);
         if (!carExists) throw new KeyNotFoundException($"Car {carId} not found");
 
         return await _db.Policies.AnyAsync(p =>
             p.CarId == carId &&
-            p.StartDate <= date &&
-            (p.EndDate == null || p.EndDate >= date)
+            p.StartDate <= DateOnly.FromDateTime(date) &&
+            p.EndDate >= date
         );
     }
 
@@ -63,7 +63,7 @@ public class CarService(AppDbContext db)
                 p.StartDate,
                 "Insurance Policy",
                 p.Provider,
-                p.EndDate,
+                DateOnly.FromDateTime(p.EndDate),
                 null,
                 null
                 ));
@@ -83,5 +83,27 @@ public class CarService(AppDbContext db)
             .ToList();
 
         return new CarHistoryDtoResponse(car.Id, historyEvents);
+    }
+
+    public async Task<List<InsurancePolicy>> GetExpiredPoliciesLastHourAsync()
+    {
+        var now = DateTime.Now;
+        var oneHourAgo = now.AddHours(-1);
+
+        return await _db.Policies
+            .Include(p => p.Car)
+            .Where(p => p.EndDate <= now &&
+                       p.EndDate >= oneHourAgo &&
+                       p.ExpirationLogged == false)
+            .ToListAsync();
+    }
+
+    public async Task MarkPoliciesAsLoggedAsync(List<InsurancePolicy> policies)
+    {
+        foreach (var policy in policies)
+        {
+            policy.ExpirationLogged = true;
+        }
+        await _db.SaveChangesAsync();
     }
 }

@@ -22,7 +22,7 @@ public class CarsController(CarService service) : ControllerBase
 
         try
         {
-            var valid = await _service.IsInsuranceValidAsync(carId, parsed);
+            var valid = await _service.IsInsuranceValidAsync(carId, parsed.ToDateTime(new TimeOnly(0, 0)));
             return Ok(new InsuranceValidityResponse(carId, parsed.ToString("yyyy-MM-dd"), valid));
         }
         catch (KeyNotFoundException)
