@@ -6,3 +6,5 @@ public record CarDto(long Id, string Vin, string? Make, string? Model, int Year,
 public record InsuranceValidityResponse(long CarId, string Date, bool Valid);
 public record ClaimDtoReq([Required] DateOnly ClaimDate, string? Description, [Range(0, double.MaxValue)] decimal Amount);
 public record ClaimDtoResponse(long Id, DateOnly ClaimDate, string? Description, decimal Amount);
+public record CarHistoryDto(DateOnly Date, string Type, string? Provider, DateOnly? EndDate, string? Description, decimal? Amount);
+public record CarHistoryDtoResponse(long CarId, List<CarHistoryDto> Events);

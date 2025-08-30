@@ -45,4 +45,19 @@ public class CarsController(CarService service) : ControllerBase
             return NotFound();
         }
     }
+
+
+    [HttpGet("cars/{carId:long}/history")]
+    public async Task<ActionResult<CarHistoryDtoResponse>> GetCarHistory(long carId)
+    {
+        try
+        {
+            CarHistoryDtoResponse carHistory = await _service.GetCarHistoryAsync(carId);
+            return Ok(carHistory);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 }

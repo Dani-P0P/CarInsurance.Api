@@ -12,6 +12,10 @@ Content-Type: application/json
 Accept: application/json
 {
   "claimDate": "2025-08-29",
-  "description": "Tamponare în girstoriu",
+  "description": "Tamponare în giratoriu",
   "amount": 1200.50
 }
+
+### Get the history of a car (example: carId=1)
+GET https://localhost:61341/api/cars/1/history
+Accept: application/json

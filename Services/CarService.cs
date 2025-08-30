@@ -47,4 +47,41 @@ public class CarService(AppDbContext db)
 
         return new ClaimDtoResponse(claim.Id, claim.ClaimDate, claim.Description, claim.Amount);
     }
+
+    public async Task<CarHistoryDtoResponse> GetCarHistoryAsync(long carId)
+    {
+        var car = await _db.Cars.Include(c => c.Policies).Include(c => c.Claims)
+            .FirstOrDefaultAsync(c => c.Id == carId);
+
+        if (car == null)
+        {
+            throw new KeyNotFoundException($"Car {carId} not found");
+        }
+
+        var policies = car.Policies.Select(p =>
+            new CarHistoryDto(
+                p.StartDate,
+                "Insurance Policy",
+                p.Provider,
+                p.EndDate,
+                null,
+                null
+                ));
+
+        var claims = car.Claims.Select(c =>
+            new CarHistoryDto(
+                c.ClaimDate,
+                "Insurance Claim",
+                null,
+                null,
+                c.Description,
+                c.Amount
+                ));
+
+        var historyEvents = policies.Concat(claims)
+            .OrderBy(e => e.Date)
+            .ToList();
+
+        return new CarHistoryDtoResponse(car.Id, historyEvents);
+    }
 }
