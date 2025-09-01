@@ -14,7 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         modelBuilder.Entity<Car>()
             .HasIndex(c => c.Vin)
-            .IsUnique(false); // TODO: set true and handle conflicts
+            .IsUnique(); // TODO: set true and handle conflicts
 
         modelBuilder.Entity<InsurancePolicy>()
             .Property(p => p.StartDate)
@@ -45,7 +45,21 @@ public static class SeedData
 
         var car1 = new Car { Vin = "VIN12345", Make = "Dacia", Model = "Logan", YearOfManufacture = 2018, OwnerId = ana.Id };
         var car2 = new Car { Vin = "VIN67890", Make = "VW", Model = "Golf", YearOfManufacture = 2021, OwnerId = bogdan.Id };
-        db.Cars.AddRange(car1, car2);
+        var car3 = new Car { Vin = "VIN67890", Make = "VW", Model = "Passat", YearOfManufacture = 2020, OwnerId = bogdan.Id };
+        var cars = new List<Car> { car1, car2, car3 };
+        foreach (var car in cars)
+        {
+            if (db.Cars.Any(c => c.Vin == car.Vin) ||
+                db.ChangeTracker.Entries<Car>().Any(c => c.Entity.Vin == car.Vin))
+            {
+                Console.WriteLine($"A car with VIN {car.Vin} already exists and will not be added!");
+            }
+            else
+            {
+                db.Cars.Add(car);
+            }
+        }
+        //db.Cars.AddRange(car1, car2, car3);
         db.SaveChanges();
 
         db.Policies.AddRange(
